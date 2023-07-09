@@ -1,0 +1,31 @@
+url = ['UCp6993wxpyDPHUpavwDFqgg', 'UCDqI2jOz0weumE8s7paEk6g', 'UC5CwaMl1eIgY8h02uZw7u8A', 'UC-hM6YJuNYVAmUWxeIr9FeA', 'UC0TXe_LYZ4scaW2XMyi5_kw',
+            'UCD8HOxPs4Xvsm8H0ZxXGiBw', 'UCdn5BQ06XqgXoAxIhbqw5Rg', 'UCQ0UDLQCjY0rmuxCDE38FGg', 'UCFTLzh12_nrtzqBPsTCqenA', 'UC1CfXB_kRs3C-zaeTG3oGyg',
+            'UC1opHUrw8rvnsadT-iGp7Cg', 'UCXTpFs_3PqI41qX2d9tL2Rw', 'UC1suqwovbL1kzsoaZgFZLKg', 'UCvzGlP9oQwU--Y0r9id_jnA', 'UC7fk0CB07ly8oSl0aqKkqFg',
+            'UCvaTdHTWBGv3MKj3KVqJVCw', 'UChAnqc_AY5_I3Px5dig3X1Q', 'UCp-5t9SrOQwXMU7iIjQfARg',
+            'UC1DCedRgGHBdm81E1llLhOQ', 'UCvInZx9h3jC2JzsIzoOebWg', 'UCCzUftO8KOVkV4wQG1vkUvg', 'UCdyqAaZDKHXg4Ahi7VENThQ', 'UCl_gCybOJRIgOXw6Qb4qJzQ',
+            'UC1uv2Oq6kNxgATlCiez59hw', 'UCZlDXzGoo7d44bwdNObFacg', 'UCqm3BQLlJfvkTsX_hvm0UmA', 'UCa9Y57gfeY0Zro_noHRVrnw', 'UCS9uQI-jC3DE0L4IpXyvr6w',
+            'UCUKD-uaobj9jiqB-VXt71mA', 'UCFKOVgVbGmX65RxO3EtH3iw', 'UCK9V2B22uJYu3N7eR_BT9QA', 'UCAWSyEs_Io8MtpY3m-zqILA',
+            'UC_vMYWcDjmfdpH6r4TTn1MQ', 'UCENwRMx5Yh42zWpzURebzTw', 'UCIBY1ollUsauvVi4hW4cumw', 'UCs9_O1tRPMQTHQ-N_L6FU2g', 'UC6eWCld0KwmyHFbAqK3V-Rw',
+            'UCoSrY_IQQVpmIRZ9Xf-y93g', 'UCL_qhgtOy0dy1Agp8vkySQg', 'UCMwGHR0BTZuLsmjY_NT5Pwg', 'UCyl1z3jo3XHR1riLFKG5UAg', 'UCHsx4Hqa-1ORjQTh9TYDhww',
+            'UC8rcEBzJSleTkf_-agPM20g',
+            'UC3n5uGu18FoCy23ggWWp8tA', 'UCmbs8T6MWqUHP1tIQvSgKrg', 'UCgmPnx-EEeOrZSg5Tiw7ZRQ', 'UCO_aKKYxn4tvrqPjcTzZ6EQ', 'UCsUj0dszADCGbF3gNrQEuSQ',
+            'UCOyYb1c43VlX9rc_lT6NKQw', 'UCP0BspO_AMEe3aQqqpo89Dg', 'UCAoy6rzhSf4ydcYjJw3WoVg',
+            'UCYz_5n-uDuChHtLo7My1HnQ', 'UC727SQYUvx5pDDGQpTICNWg', 'UChgTyjG-pdNvxxhdsXfHQ5Q',
+            'UCTvHWSfBZgtxE4sILOaurIQ', 'UCZLZ8Jjx_RN2CXloOmgTHVg', 'UCjLEmnpCNeisMxy134KPwWw']
+
+name = ['sora', 'roboco', 'suisei', 'miko', 'azki',
+        'mel', 'fubuki', 'matsuri', 'rosenthal', 'haato',
+        'aqua', 'shion', 'choco', 'subaru', 'ayame',
+        'okayu', 'korone', 'mio',
+        'pekora', 'flare', 'marine', 'noel', 'rushia',
+        'towa', 'kanata', 'watame', 'luna', 'coco',
+        'botan', 'lamy', 'polka', 'nene',
+        'iroha', 'darknesss', 'chloe', 'lui', 'koyori',
+        'gura', 'calliope', "ina'nis", 'amelia', 'kiara',
+        'irys', 'mumei', 'kronii', 'baelz', 'fauna',
+        'sana',
+        'risu', 'hoshinova', 'iofifteen',
+        'ollie', 'melfissa', 'reine',
+        'zeta', 'kovalskia', 'kanaeru']
+
+
