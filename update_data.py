@@ -9,12 +9,16 @@ from dotenv import load_dotenv
 load_dotenv()
 import os
 from supabase import create_client
+import time
+import schedule
 
 class Updater():
+    
     def __init__(self) -> None:
         self.upcoming = Upcoming()
         self.live = Live()
         self.archive = Archive()
+        self.update_counter = 0
     
     def refresh_data(self):
         update_live = self.upcoming.checkLive()
@@ -90,9 +94,33 @@ class Updater():
                     data = supabase.table("Upcoming").insert(i).execute()
                     assert len(data.data) > 0
                     
-        upcomingRes = supabase.table('Upcoming').select('*').execute()
+        upcomingRes = supabase.table('Upcoming').select('id').execute()
         upcomingIdRes = [i['id'] for i in upcomingRes.data]
         deleteUpcomingId = [i for i in upcomingIdRes if i not in upcomingId]
         
         for i in deleteUpcomingId:
             data = supabase.table("Upcoming").delete().eq("id", i).execute()
+            
+        self.update_counter += 1
+        
+        print(f'updated {self.update_counter} times')
+            
+    def scheduler(self):
+        schedule.every(10).minutes.do(self.refresh_data)
+    
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
+            
+            
+            
+
+if __name__ == "__main__":
+    update_adapter = Updater() 
+    update_adapter.scheduler()
+    # update_adapter.refresh_data()
+#     schedule.every(10).minutes.do(update_adapter.refresh_data())
+    
+#     while True:
+#         schedule.run_pending()
+#         time.sleep(1)
