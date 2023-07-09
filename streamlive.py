@@ -19,9 +19,6 @@ class Live():
         self.load_data()
     
     def load_data(self):
-        
-        # self.list = supabase.table('liveTable').select("*").execute()
-        # self.list = self.list.data
         with open('./currentlive.json', 'r') as file:
             loader = json.load(file)
             self.list = loader["live"]

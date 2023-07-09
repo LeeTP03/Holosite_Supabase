@@ -174,26 +174,26 @@ def refresh_videos():
                         u.add(j)
 
 
-def refresh_data():
-    update_live = u.checkLive()
+# def refresh_data():
+#     update_live = u.checkLive()
 
-    for i in update_live:
-        live.add(i)
+#     for i in update_live:
+#         live.add(i)
 
-    archives = live.check_live()
+#     archives = live.check_live()
 
-    for i in archives:
-        archiver.add(i)
+#     for i in archives:
+#         archiver.add(i)
 
-    live.write_to_file()
-    u.write_to_file()
-    archiver.write_to_file()
+#     live.write_to_file()
+#     u.write_to_file()
+#     archiver.write_to_file()
     
-    uID = u.idlist
-    lID = live.idlist
+#     uID = u.idlist
+#     lID = live.idlist
     
-    updateDatabase(uID, lID)
-    # updateSiteData()
+#     updateDatabase(uID, lID)
+#     # updateSiteData()
 
 
 def updateSiteData():
@@ -243,69 +243,9 @@ def updateSiteData():
         string = "let archive =" + archive + "\nexport {archive}"
         file.write(string)
         
-def updateDatabase(upcomingId = None, liveId = None):
-    url = os.environ.get("SUPABASE_URL")
-    key = os.environ.get("SUPABASE_KEY")
 
-    supabase = create_client(url, key)
-    
-    liveRes = supabase.table('Live').select('*').execute()
-    liveIdRes = [i['id'] for i in liveRes.data]
-    
-    with open('./currentlive.json', 'r') as file:
-        loader = json.load(file)
-        
-        for i in loader['live']:
-            if i['id'] in liveIdRes:
-                data = supabase.table("Live").update(i).eq("id", i['id'] ).execute()
-                assert len(data.data) > 0
-                
-            else:
-                data = supabase.table("Live").insert(i).execute()
-                assert len(data.data) > 0
-                
-    liveRes = supabase.table('Live').select('*').execute()
-    liveIdRes = [i['id'] for i in liveRes.data]
-    deleteLiveId = [i for i in liveIdRes if i not in liveId]
-    for i in deleteLiveId:
-        data = supabase.table("Live").delete().eq("id", i).execute()
-        
-    with open('./currentarchive.json', 'r') as file:
-        loader = json.load(file)
-        
-        archiveIdRes = supabase.table('Archive').select('id').execute()
-        archiveIdRes = [i['id'] for i in archiveIdRes.data]
-                           
-        for i in loader['archive']:
-            if i['id'] in archiveIdRes:
-                break
-            else:
-                print("added")
-                data = supabase.table("Archive").insert(i).execute()
-                assert len(data.data) > 0
-                
-    upcomingRes = supabase.table('Upcoming').select('id').execute()
-    upcomingIdRes = [i['id'] for i in upcomingRes.data]
-    
-    with open('./currentupcoming.json', 'r') as file:
-        loader = json.load(file)
-        
-        for i in loader['upcoming']:
-            if i['id'] in upcomingIdRes:
-                continue
-            else:
-                data = supabase.table("Upcoming").insert(i).execute()
-                assert len(data.data) > 0
-                
-    upcomingRes = supabase.table('Upcoming').select('*').execute()
-    upcomingIdRes = [i['id'] for i in upcomingRes.data]
-    deleteUpcomingId = [i for i in upcomingIdRes if i not in upcomingId]
-    print(deleteUpcomingId)
-    for i in deleteUpcomingId:
-        data = supabase.table("Upcoming").delete().eq("id", i).execute()
     
 if __name__ == "__main__":
     refresh_videos()
-    refresh_data()
-    updateDatabase(u.idlist, live.idlist)
-    # getVideoInfo("ttw0RVeWTD4")
+    # refresh_data()
+    # updateDatabase(u.idlist, live.idlist)
