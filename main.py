@@ -172,6 +172,8 @@ def refresh_videos():
                         live.add(j)
                     elif "actualEndTime" not in j:
                         u.add(j)
+    live.write_to_file()
+    u.write_to_file()
 
 
 # def refresh_data():

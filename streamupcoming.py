@@ -28,11 +28,14 @@ class Upcoming():
             
             if response is None:
                 continue
-            
+                
             if 'actualStartTime' in response:
                 self.list.remove(i)
                 live.append(response)
-        
+
+            elif i != response:
+                self.list[self.list.index(i)] = response
+                
         return live
             
         

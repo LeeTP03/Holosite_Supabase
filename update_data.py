@@ -89,7 +89,8 @@ class Updater():
             
             for i in loader['upcoming']:
                 if i['id'] in upcomingIdRes:
-                    continue
+                    data = supabase.table("Upcoming").update(i).eq("id", i['id'] ).execute()
+                    assert len(data.data) > 0
                 else:
                     data = supabase.table("Upcoming").insert(i).execute()
                     assert len(data.data) > 0
@@ -97,7 +98,7 @@ class Updater():
         upcomingRes = supabase.table('Upcoming').select('id').execute()
         upcomingIdRes = [i['id'] for i in upcomingRes.data]
         deleteUpcomingId = [i for i in upcomingIdRes if i not in upcomingId]
-        
+
         for i in deleteUpcomingId:
             data = supabase.table("Upcoming").delete().eq("id", i).execute()
             
@@ -117,8 +118,8 @@ class Updater():
 
 if __name__ == "__main__":
     update_adapter = Updater() 
-    update_adapter.scheduler()
-    # update_adapter.refresh_data()
+    # update_adapter.scheduler()
+    update_adapter.refresh_data()
 #     schedule.every(10).minutes.do(update_adapter.refresh_data())
     
 #     while True:
