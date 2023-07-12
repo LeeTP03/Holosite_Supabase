@@ -31,6 +31,7 @@ class Upcoming():
                 
             if 'actualStartTime' in response:
                 self.list.remove(i)
+                self.idlist.remove(id)
                 live.append(response)
 
             elif i != response:

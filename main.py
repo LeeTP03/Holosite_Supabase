@@ -73,10 +73,10 @@ def getVideoInfo(id):
         part="liveStreamingDetails,contentDetails, id, snippet, statistics, status",
         id=id,
     )
-    
+
     response = req.execute()
     items = response["items"]
-        
+
     if len(items) == 0:
         return None
 
@@ -95,6 +95,7 @@ def getVideoInfo(id):
         if "concurrentViewers" in items[0]["liveStreamingDetails"]:
             live_vid_json = {
                 "id": id,
+                "type": "Live",
                 "title": items[0]["snippet"]["title"],
                 "channelTitle": items[0]["snippet"]["channelTitle"],
                 "channelThumbnail": loader["items"][0]["snippet"]["thumbnails"][
@@ -110,12 +111,14 @@ def getVideoInfo(id):
                     "scheduledStartTime"
                 ],
                 "videolink": link,
+                "channelId": loader["items"][0]["id"],
             }
             lst = live_vid_json
 
         elif "actualEndTime" in items[0]["liveStreamingDetails"]:
             ended_vid_json = {
                 "id": id,
+                "type": "Archive",
                 "title": items[0]["snippet"]["title"],
                 "channelTitle": items[0]["snippet"]["channelTitle"],
                 "channelThumbnail": loader["items"][0]["snippet"]["thumbnails"][
@@ -129,12 +132,14 @@ def getVideoInfo(id):
                 "actualStartTime": items[0]["liveStreamingDetails"]["actualStartTime"],
                 "actualEndTime": items[0]["liveStreamingDetails"]["actualEndTime"],
                 "videolink": link,
+                "channelId": loader["items"][0]["id"],
             }
             lst = ended_vid_json
 
         elif "actualStartTime" not in items[0]["liveStreamingDetails"]:
             ended_vid_json = {
                 "id": id,
+                "type": "Upcoming",
                 "title": items[0]["snippet"]["title"],
                 "channelTitle": items[0]["snippet"]["channelTitle"],
                 "channelThumbnail": loader["items"][0]["snippet"]["thumbnails"][
@@ -146,12 +151,9 @@ def getVideoInfo(id):
                     "scheduledStartTime"
                 ],
                 "videolink": link,
+                "channelId": loader["items"][0]["id"],
             }
             lst = ended_vid_json
-
-    with open(f"./video/{ch_name}vid.json", "w") as file:
-        jsonobj = json.dumps(response, indent=4)
-        file.write(jsonobj)
 
     return lst
 
@@ -174,28 +176,6 @@ def refresh_videos():
                         u.add(j)
     live.write_to_file()
     u.write_to_file()
-
-
-# def refresh_data():
-#     update_live = u.checkLive()
-
-#     for i in update_live:
-#         live.add(i)
-
-#     archives = live.check_live()
-
-#     for i in archives:
-#         archiver.add(i)
-
-#     live.write_to_file()
-#     u.write_to_file()
-#     archiver.write_to_file()
-    
-#     uID = u.idlist
-#     lID = live.idlist
-    
-#     updateDatabase(uID, lID)
-#     # updateSiteData()
 
 
 def updateSiteData():

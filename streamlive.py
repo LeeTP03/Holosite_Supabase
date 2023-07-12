@@ -16,6 +16,7 @@ class Live():
     def __init__(self) -> None:
         self.list = []
         self.new_data = []
+        self.idlist = []
         self.load_data()
     
     def load_data(self):
@@ -23,13 +24,16 @@ class Live():
             loader = json.load(file)
             self.list = loader["live"]
             
-        self.idlist = []
         for i in self.list:
             self.idlist.append(i['id'])
     
     def add(self, item):
         if item['id'] in self.idlist:
             return
+
+        if 'actualEndTIme' in item:
+            return item
+        
         self.new_data.append(item)
         self.idlist.append(item['id'])
         
@@ -46,6 +50,7 @@ class Live():
             
             if 'actualEndTime' in response:
                 self.list.remove(i)
+                self.idlist.remove(id)
                 removed.append(response)
 
         return removed
