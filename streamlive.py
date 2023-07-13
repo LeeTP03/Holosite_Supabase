@@ -1,15 +1,16 @@
+from googleapiclient.discovery import build
 from dotenv import load_dotenv
 load_dotenv()
 
-import os
-from supabase import create_client
 import json
 from datetime import datetime
+import urls
+import logging
+logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
-# url = os.environ.get("SUPABASE_URL")
-# key = os.environ.get("SUPABASE_KEY")
-
-# supabase = create_client(url, key)
+api_service_name = "youtube"
+api_version = "v3"
+api_key = "AIzaSyDmDbzEfrKCfE0aYVsoxIDuzd_MwXijOP4"
 
 class Live():
     
@@ -18,6 +19,7 @@ class Live():
         self.new_data = []
         self.idlist = []
         self.load_data()
+        self.youtube = build(api_service_name, api_version, developerKey=api_key)
     
     def load_data(self):
         with open('./currentlive.json', 'r') as file:
@@ -38,22 +40,114 @@ class Live():
         self.idlist.append(item['id'])
         
     def check_live(self):
-        from main import getVideoInfo
-        removed = []
+        archivelist = []
         
         for i in self.list:
             id = i['id']
-            response = getVideoInfo(id)
+            response = self.getVideoInfo(id)
         
             if response is None:
                 continue
             
-            if 'actualEndTime' in response:
+            elif response['type'] == 'Live':
+                self.list[self.list.index(i)] = response
+            
+            elif response['type'] == 'Archive':
                 self.list.remove(i)
                 self.idlist.remove(id)
-                removed.append(response)
+                archivelist.append(response)
 
-        return removed
+        return archivelist
+    
+    def getVideoInfo(self, id):
+        req = self.youtube.videos().list(
+            part="liveStreamingDetails,contentDetails, id, snippet, statistics, status",
+            id=id,
+        )
+
+        response = req.execute()
+        items = response["items"]
+
+        if len(items) == 0:
+            return None
+
+        ch_id = items[0]["snippet"]["channelId"]
+        ch_name = urls.name[urls.url.index(ch_id)]
+
+        lst = {}
+
+        if "liveStreamingDetails" not in items[0]:
+            return None
+
+        with open(f"./channels/{ch_name}vid.json", "r") as file:
+            loader = json.load(file)
+
+            link = "https://www.youtube.com/watch?v=" + id
+            if "concurrentViewers" in items[0]["liveStreamingDetails"]:
+                live_vid_json = {
+                    "id": id,
+                    "type": "Live",
+                    "title": items[0]["snippet"]["title"],
+                    "channelTitle": items[0]["snippet"]["channelTitle"],
+                    "channelThumbnail": loader["items"][0]["snippet"]["thumbnails"][
+                        "default"
+                    ]["url"],
+                    "thumbnail": items[0]["snippet"]["thumbnails"]["medium"]["url"],
+                    "duration": items[0]["contentDetails"]["duration"],
+                    "concurrentViewers": items[0]["liveStreamingDetails"][
+                        "concurrentViewers"
+                    ],
+                    "actualStartTime": items[0]["liveStreamingDetails"]["actualStartTime"],
+                    "scheduledStartTime": items[0]["liveStreamingDetails"][
+                        "scheduledStartTime"
+                    ],
+                    "videolink": link,
+                    "channelId": loader["items"][0]["id"],
+                }
+                lst = live_vid_json
+
+            elif "actualEndTime" in items[0]["liveStreamingDetails"]:
+                ended_vid_json = {
+                    "id": id,
+                    "type": "Archive",
+                    "title": items[0]["snippet"]["title"],
+                    "channelTitle": items[0]["snippet"]["channelTitle"],
+                    "channelThumbnail": loader["items"][0]["snippet"]["thumbnails"][
+                        "default"
+                    ]["url"],
+                    "thumbnail": items[0]["snippet"]["thumbnails"]["medium"]["url"],
+                    "duration": items[0]["contentDetails"]["duration"],
+                    "scheduledStartTime": items[0]["liveStreamingDetails"][
+                        "scheduledStartTime"
+                    ],
+                    "actualStartTime": items[0]["liveStreamingDetails"]["actualStartTime"],
+                    "actualEndTime": items[0]["liveStreamingDetails"]["actualEndTime"],
+                    "videolink": link,
+                    "channelId": loader["items"][0]["id"],
+                }
+                lst = ended_vid_json
+
+            elif "actualStartTime" not in items[0]["liveStreamingDetails"]:
+                ended_vid_json = {
+                    "id": id,
+                    "type": "Upcoming",
+                    "title": items[0]["snippet"]["title"],
+                    "channelTitle": items[0]["snippet"]["channelTitle"],
+                    "channelThumbnail": loader["items"][0]["snippet"]["thumbnails"][
+                        "default"
+                    ]["url"],
+                    "thumbnail": items[0]["snippet"]["thumbnails"]["medium"]["url"],
+                    "duration": items[0]["contentDetails"]["duration"],
+                    "scheduledStartTime": items[0]["liveStreamingDetails"][
+                        "scheduledStartTime"
+                    ],
+                    "videolink": link,
+                    "channelId": loader["items"][0]["id"],
+                }
+                lst = ended_vid_json
+
+        return lst
+    
         
     def write_to_file(self):
         self.list += self.new_data
