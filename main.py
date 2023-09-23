@@ -17,7 +17,7 @@ logging.getLogger('googleapiclient.discovery_cache').setLevel(logging.ERROR)
 
 api_service_name = "youtube"
 api_version = "v3"
-api_key = "AIzaSyDmDbzEfrKCfE0aYVsoxIDuzd_MwXijOP4"
+api_key = "XXX"
 youtube = build(api_service_name, api_version, developerKey=api_key)
 
 class VideoAPIFetch():
