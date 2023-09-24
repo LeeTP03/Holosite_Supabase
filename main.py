@@ -22,10 +22,11 @@ youtube = build(api_service_name, api_version, developerKey=api_key)
 
 class VideoAPIFetch():
     
-    def __init__(self):
-        self.u = Upcoming()
-        self.live = Live()
-        self.archiver = Archive()
+    def __init__(self, live, upcoming, archive) -> None:
+        self.u = upcoming
+        self.live = live
+        self.archiver = archive
+        self.call_amount = 0
 
     def getChannel(self, id):
         req = youtube.channels().list(
@@ -42,6 +43,7 @@ class VideoAPIFetch():
     def getChannelActivities(self, id):
         req = youtube.activities().list(part="contentDetails,id,snippet", channelId=id)
         response = req.execute()
+        self.call_amount += 1
         ch_name = urls.name[urls.url.index(id)]
 
         with open(f"./activities/{ch_name}vid.json", "w") as file:
@@ -66,7 +68,7 @@ class VideoAPIFetch():
         for i in lst:
             info = self.getVideoInfo(i)
             lst2.append(info)
-
+        
         livestreams = {"livestreams": lst2}
 
         with open(f"./livestreams/{ch_name}lives.json", "w") as file:
@@ -76,13 +78,15 @@ class VideoAPIFetch():
 
     def getVideoInfo(self, id):
         req = youtube.videos().list(
-            part="liveStreamingDetails,contentDetails, id, snippet, statistics, status",
+            part="liveStreamingDetails, contentDetails, id, snippet, statistics, status",
             id=id,
         )
 
         response = req.execute()
+        self.call_amount += 1
         items = response["items"]
 
+        
         if len(items) == 0:
             return None
 
@@ -90,9 +94,15 @@ class VideoAPIFetch():
         ch_name = urls.name[urls.url.index(ch_id)]
 
         lst = {}
-
+        
         if "liveStreamingDetails" not in items[0]:
             return None
+        
+        if "scheduledStartTime" not in items[0]["liveStreamingDetails"]:
+            return None
+        
+        # if "actualStartTime" in items[0]["liveStreamingDetails"] and "actualEndTime" not in items[0]["liveStreamingDetails"] and "concurrentViewers" not in items[0]["liveStreamingDetails"]:
+        #     return None
 
         with open(f"./channels/{ch_name}vid.json", "r") as file:
             loader = json.load(file)
@@ -160,6 +170,8 @@ class VideoAPIFetch():
                     "channelId": loader["items"][0]["id"],
                 }
                 lst = ended_vid_json
+            else:
+                return None
 
         return lst
 
@@ -178,8 +190,11 @@ class VideoAPIFetch():
                     if j != None:
                         if "concurrentViewers" in j:
                             self.live.add(j)
-                        elif "actualEndTime" not in j:
+                        elif "actualEndTime" in j:
+                            self.archiver.add(j)
+                        else:
                             self.u.add(j)
+                            
         self.live.write_to_file()
         self.u.write_to_file()
         
@@ -236,11 +251,11 @@ class VideoAPIFetch():
             file.write(string)
         
 class Updater:
-    def __init__(self) -> None:
-        self.upcoming = Upcoming()
-        self.live = Live()
-        self.archive = Archive()
-        self.fetcher = VideoAPIFetch()
+    def __init__(self, live, upcoming, archive) -> None:
+        self.upcoming = upcoming
+        self.live = live
+        self.archive = archive
+        self.fetcher = VideoAPIFetch(live, upcoming, archive)
         self.update_counter = 0
 
     def refresh_data(self):
@@ -265,9 +280,9 @@ class Updater:
         self.upcoming.write_to_file()
         self.archive.write_to_file()
 
-        self.upcoming = Upcoming()
-        self.live = Live()
-        self.archive = Archive()
+        # self.upcoming = Upcoming()
+        # self.live = Live()
+        # self.archive = Archive()
 
         self.newupdateDatabase()
         
@@ -275,12 +290,16 @@ class Updater:
 
         current_time = now.strftime("%H:%M:%S")
         print("Last updated at", current_time)
-
+        print("Activity reset call amount", self.fetcher.call_amount)
+        print("Live call amount", self.live.call_amount)
+        print("upcoming call amount", self.upcoming.call_amount)
+        
+        
     def scheduler(self):
-        self.refresh_data()
         self.fetcher.refresh_videos()
-        schedule.every(10).minutes.do(self.refresh_data)
-        schedule.every(30).minutes.do(self.fetcher.refresh_videos)
+        self.refresh_data()
+        schedule.every(2).minutes.do(self.refresh_data)
+        schedule.every(4).minutes.do(self.fetcher.refresh_videos)
         while True:
             schedule.run_pending()
             time.sleep(1)
@@ -317,7 +336,7 @@ class Updater:
 
             for i in loader["live"]:
                 if i["id"] in allIDs:
-                    data = (
+                    data = ( 
                         supabase.table("StreamData")
                         .update(i)
                         .eq("id", i["id"])
@@ -351,6 +370,4 @@ class Updater:
                     allIDs.append(i["id"])
                     assert len(data.data) > 0
     
-if __name__ == "__main__":
-    update_adapter = Updater()
-    update_adapter.scheduler()
+

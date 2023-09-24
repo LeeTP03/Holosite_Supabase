@@ -20,6 +20,7 @@ class Live():
         self.idlist = []
         self.load_data()
         self.youtube = build(api_service_name, api_version, developerKey=api_key)
+        self.call_amount = 0
     
     def load_data(self):
         with open('./currentlive.json', 'r') as file:
@@ -47,7 +48,11 @@ class Live():
             response = self.getVideoInfo(id)
         
             if response is None:
-                continue
+                self.list.remove(i)
+                
+            elif len(response) == 0:
+                self.list.remove(i)
+                
             
             elif response['type'] == 'Live':
                 self.list[self.list.index(i)] = response
@@ -66,6 +71,7 @@ class Live():
         )
 
         response = req.execute()
+        self.call_amount += 1
         items = response["items"]
 
         if len(items) == 0:
